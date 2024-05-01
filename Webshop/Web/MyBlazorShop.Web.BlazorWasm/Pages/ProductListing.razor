@@ -1,0 +1,67 @@
+﻿@using Lib.Services;
+@using Lib.Models;
+@using Webshop.Shared.Layout;
+@using Webshop.Shared;
+@using BlazorBootstrap
+
+@page "/"
+@inject ISurfboardService productService
+
+<PageTitle>Surfboards listings</PageTitle>
+<HeadContent>
+    <meta name="description" content="Product listing page" />
+</HeadContent>
+<Hero Title="Shop" Description="Share your love of technology, and spread good cheer, with Binaryville official merchandise, including t-shirts, hats, mugs, aprons, posters, stickers, and more. Each unique treasure features a charming Binaryville robot, encapsulated inside a motivating historical quote, cleverly updated for the times. Even the most hard-to-please individuals can't resist these infectious designs. Perfect for the techie in your life!" Image="product-montage.png" BackgroundImage="shop-hero-yellow"></Hero>
+
+@if (Products?.Any() ?? false)
+{
+    <main class="margin-horizontal:auto max-width:container padding-horizontal:32">
+        <div id="vue-shop" class="margin-bottom:32 quenched">
+            <div class="display:flex flex-grow:1 flex-wrap:wrap margin-bottom:-32 margin-horizontal:-16">
+                <div class="display:flex flex-direction:column flex-grow:0 flex-shrink:0 margin-bottom:32 padding-horizontal:16 width:100 @@mq-768--width:100">
+                    <ul class="display:flex flex-grow:1 flex-wrap:wrap margin-bottom:-32 margin-horizontal:-16">
+                        @foreach(var product in Products)
+                        {
+                            <ProductListingItem Product="product"></ProductListingItem>
+                        }                        
+                    </ul>
+                </div>
+            </div>
+            <Pagination 
+                    ActivePageNumber="@currentPageNumber"
+                    TotalPages="10"
+                    PageChanged="OnPageChangedAsync" />
+        </div>
+    </main>
+}
+
+@code {
+    public IList<Surfboard> Products { get; set; }
+    public int ItemsPerPage { get; set; } = 3;
+    int currentPageNumber = 1;
+
+    private async Task OnPageChangedAsync(int newPageNumber)
+    {
+        await LoadPageAsync(newPageNumber);
+    }
+
+    private async Task LoadPageAsync(int pageNumber)
+    {
+        // Calculate the index from which to start displaying items on the current page
+        int startIndex = (pageNumber - 1) * ItemsPerPage;
+
+        // Update the Products list to include only the items for the current page
+        Products = await productService.GetAllAsync(); // Assuming this returns all surfboards
+        Products = Products.Skip(startIndex).Take(ItemsPerPage).ToList();
+
+        // Update the current page number
+        currentPageNumber = pageNumber;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPageAsync(currentPageNumber);
+
+        await base.OnInitializedAsync();
+    }
+}

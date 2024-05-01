@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\RentalWebsite",
+    "\\Webshop",
+    "\\Webshop\\Web",
+    "\\Webshop\\Web\\MyBlazorShop.Web.BlazorWasm",
+    "\\Webshop\\Web\\MyBlazorShop.Web.BlazorWasm\\Pages",
+    "\\Webshop\\Web\\MyBlazorShop.Web.BlazorWasm\\wwwroot",
+    "\\Webshop\\Web\\MyBlazorShop.Web.BlazorWasm\\wwwroot\\js"
+  ],
+  "SelectedNode": "\\Webshop\\Web\\MyBlazorShop.Web.BlazorWasm\\Pages\\Index.razor.cs",
+  "PreviewInSolutionExplorer": false
+}

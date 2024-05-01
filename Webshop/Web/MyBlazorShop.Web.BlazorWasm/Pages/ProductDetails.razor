@@ -1,0 +1,112 @@
+﻿@using Lib.Models;
+@using Lib.Services;
+@using Webshop.Shared.Layout
+@page "/product/{id}"
+@inject ISurfboardService surfboardService
+@inject IShoppingCartService shoppingCartService
+@inject IJSRuntime jsRunTime
+
+@if (Surfboard != null)
+{
+    <PageTitle>@Surfboard.Name</PageTitle>
+    <HeadContent>
+        <meta name="description" content="@Surfboard.Name product page" />
+    </HeadContent>
+}
+   <main class="margin-horizontal:auto max-width:container padding-horizontal:32">
+       <div id="vue-product-detail" class="quenched">
+           <div class="margin-bottom:32 @@mq-960--margin-top:32">
+               <div class="display:flex flex-wrap:wrap flex-grow:1 margin-bottom:-32 margin-horizontal:-16">
+                @if (Surfboard == null)
+                {
+                    <div class="display:flex flex-direction:column flex-grow:0 flex-shrink:0 margin-bottom:32 padding-horizontal:16 width:100 @@mq-768--width:50">
+                        <p>Not found</p>
+                    </div>
+                }
+                else {
+                    <div class="display:flex flex-direction:column flex-grow:0 flex-shrink:0 margin-bottom:32 padding-horizontal:16 width:100 @@mq-768--width:50">
+                        <img id="zoom_img" @onmouseover="ZoomIn" @onmouseout="ZoomOut" src="@Surfboard.ImgUrl" alt="Photo of @Surfboard.Name" class="margin-bottom:32 max-width:100" />
+
+                   </div>
+                   <div class="display:flex flex-direction:column flex-grow:0 flex-shrink:0 margin-bottom:32 padding-horizontal:16 width:100 @@mq-768--width:50">
+                        <h1 class="font-weight:500 font-size:28 line-height:1_142 margin-bottom:24 @@mq-768--font-size:32 @@mq-768--line-height:1_125">@Surfboard.Name</h1>
+                        <p class="font-weight:500 font-size:28 line-height:1_142 margin-bottom:24">$@Surfboard.Price.ToString("0.00")</p>
+                        <div class="display:flex flex-wrap:wrap">
+                           <input @bind="Quantity" @bind:event="oninput" type="text" placeholder="Quantity" name="Qty" class="padding:12 &:hocus--border-color:neutral-000000 appearance:none background-color:neutral-ffffff border-color:neutral-4c5b5c border-radius:0 border-style:solid border-width:1 color:neutral-483e40 min-height:form-input width:100" /> 
+                            <button @onclick="AddToCart" class="display:inline-block padding-horizontal:24 padding-horizontal:24 &amp;:hocus--background-color:yellow-f0c808 background-color:orange-ff583d color:neutral-222224 font-size:18 font-weight:700 line-height:1 margin-bottom:32 padding-vertical:12 padding-vertical:16">
+                                @if (shoppingCartService.HasProduct(Surfboard.Id))
+                                {
+                                    <span>Added to cart. 
+                                        @if (Quantity.HasValue) {
+                                            <text>Add @Quantity more?</text>
+                                        }
+                                    </span>
+                                }
+                                else {
+                                    <span>
+                                        Add @Quantity to Cart?
+                                    </span>
+                                }
+                            </button>
+                       </div>
+                        @if (AllSurfboards != null)
+                        {
+                            <ul>
+                                @foreach (var product in AllSurfboards)
+                                {
+                                    <li><a href="@product.ImgUrl">@product.Name</a></li>
+                                }
+                            </ul>
+                        }
+                   </div>               
+               }
+               </div>
+           </div>
+       </div>
+    </main>
+@code {
+    public Surfboard? Surfboard { get; set; }
+
+    public int? Quantity { get; set; }
+
+    [Parameter]
+    public string Id { get; set; }
+
+    public IList<Surfboard>? AllSurfboards { get; set; }
+}
+@functions {
+
+    public async Task ZoomIn()
+    { 
+        await jsRunTime.InvokeVoidAsync("zoomin"); 
+    }
+
+    public async Task ZoomOut()
+    { 
+        await jsRunTime.InvokeVoidAsync("zoomout"); 
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AllSurfboards = await surfboardService.GetAllAsync();
+
+        await base.OnInitializedAsync();    
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(Id) && int.TryParse(Id, out int parsedId))
+        {
+            Surfboard = await surfboardService.GetByIdAsync(Convert.ToInt32(Id));
+        }
+    }
+
+    public void AddToCart()
+    {
+        if (Surfboard != null)
+        {
+            shoppingCartService.AddProduct(Surfboard, Quantity ?? 1);
+            Quantity = null;
+        }
+    }
+}

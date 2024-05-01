@@ -1,0 +1,115 @@
+﻿@model PaginatedList<mvc_surfboard.Models.Surfboard>
+
+@{
+    ViewData["Title"] = "Surfboards";
+}
+
+<h1>Surfboards  </h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-dark">+ Create New</a>
+</p>
+<table class="table table-sm align-middle">
+    <thead>
+        <tr>
+            <th>
+               #
+            </th>
+            <th>
+                <a asp-action="List" asp-route-sortOrder="@ViewData["NameSortParm"]">@Html.DisplayNameFor(model => model[0].Name)</a>
+            </th>
+            <th>
+                <a asp-action="List" asp-route-sortOrder="@ViewData["LengthSortParm"]">@Html.DisplayNameFor(model => model[0].Length)</a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Width)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Thickness)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Volume)
+            </th>
+            <th>
+                <a asp-action="List" asp-route-sortOrder="@ViewData["TypeSortParm"]">@Html.DisplayNameFor(model => model[0].Type)</a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Equipment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].ImgUrl)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Length)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Width)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Thickness)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Volume)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Equipment)
+            </td>
+            <td>
+                @if (!string.IsNullOrEmpty(item?.ImgUrl))
+                    {
+                        <img src="@item.ImgUrl" class="app-surfboard-img" />
+                    }
+                    else
+                    {
+                        <span>None</span>
+                    }
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a>
+                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="List"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-action="List"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>

@@ -1,0 +1,85 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@model IEnumerable<mvc_surfboard.Models.Rental>
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Bookings";
+}
+
+<h1>
+    @if (User.IsInRole("User"))
+    {
+        <span>
+            Mine
+        </span>
+    }
+    Bookings
+</h1>
+
+@if (User.IsInRole("Admin"))
+{
+    <p>
+        <a asp-action="Create" class="btn btn-dark">+ Create New</a>
+    </p>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                #
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalCost)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Surfboard)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>   
+               @Html.DisplayFor(modelItem => item.RentalId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalCost)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.User.FirstName) @Html.DisplayFor(modelItem => item.User.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Surfboard.Name)
+            </td>
+            <td>
+            @if (User.IsInRole("Admin"))
+                {
+                   <a asp-action="Edit" asp-route-id="@item.RentalId" class="btn btn-dark">Edit</a>
+                }
+                <a asp-action="Details" asp-route-id="@item.RentalId"class="btn btn-secondary">Details</a>
+                <a asp-action="Delete" asp-route-id="@item.RentalId" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
